@@ -38,7 +38,8 @@ class PublicUserApiTests(TestCase):
         """Test creating a user that already exists fails"""
         payload = {
             'email': 'test@test.com',
-            'password': 'testtest'
+            'password': 'testtest',
+            'name': 'Test name'
         }
         create_user(**payload)
 
@@ -51,7 +52,8 @@ class PublicUserApiTests(TestCase):
         """Test that the password must be more than 5 characters"""
         payload = {
             'email': 'test@test.com',
-            'password': 'test'
+            'password': 'test',
+            'name': 'Test name'
         }
 
         # Make the response
