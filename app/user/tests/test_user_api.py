@@ -7,9 +7,11 @@ from rest_framework import status
 
 
 CREATE_USER_URL = reverse('user:create')
-
+TOKEN_URL = reverse('user:token')
 
 # Helper function
+
+
 def create_user(**param):
     return get_user_model().objects.create_user(**param)
 
@@ -68,3 +70,43 @@ class PublicUserApiTests(TestCase):
 
         # Make sure that the test is false.
         self.assertFalse(user_exists)
+
+    def test_create_token_for_user(self):
+        """Test that a token is created for the user"""
+        payload = {'email': 'test@test.com', 'password': 'password'}
+
+        create_user(**payload)
+
+        res = self.client.post(TOKEN_URL, payload)
+
+        # In self we make sure that there is a token in res.data
+        self.assertIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_create_token_invalid_credentials(self):
+        """Test that token is not created if invalid credentials are given"""
+        create_user(email='test@test.com', password='password')
+        # payload is going to have the wrong password for the
+        # user that was just created.
+        payload = {'email': 'test@test.com', 'password': 'wrongpassword'}
+
+        res = self.client.post(TOKEN_URL, payload)
+
+        # We make sure that there is no token in res.data
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_no_user(self):
+        """Test that token is not created if user doesn't exist"""
+        payload = {'email': 'test@test.com', 'password': 'password'}
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_missing_fields(self):
+        """Test that email and password are required"""
+        res = self.client.post(TOKEN_URL, {'email': '', 'password': 'yeah'})
+
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
