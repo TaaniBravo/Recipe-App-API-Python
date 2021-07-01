@@ -1,4 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\taani\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+    "python.defaultInterpreterPath": "C:\\Users\\taani\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
     "python.analysis.extraPaths": ["app", "../app"],
 }
